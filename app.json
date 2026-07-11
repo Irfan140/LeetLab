@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "Mobleet",
+    "slug": "mobleet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo.png",
+    "scheme": "mobleet",
+    "userInterfaceStyle": "dark", 
+    "ios": {
+      "icon": "./assets/expo.icon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0a0a0c",
+        "foregroundImage": "./assets/images/logo.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.codebysuraj.mobleet"
+    },
+    "web": {
+      "output": "server",
+      "favicon": "./assets/images/logo.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0a0a0c",
+          "image": "./assets/images/logo.png",
+          "imageWidth": 120,
+          "android": {
+            "image": "./assets/images/logo.png",
+            "imageWidth": 120
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9484ac17-e553-4b6b-b765-58318c77714f"
+      }
+    },
+    "owner": "irfan140"
+  }
+}

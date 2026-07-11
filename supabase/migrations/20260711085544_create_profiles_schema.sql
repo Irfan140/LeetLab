@@ -1,0 +1,3 @@
+-- No-op migration.
+-- This version was already recorded in the linked Supabase project's
+-- migration history, so the file is kept locally to keep CLI history aligned.
