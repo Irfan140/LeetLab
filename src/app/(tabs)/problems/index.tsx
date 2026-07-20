@@ -1,15 +1,15 @@
-import { useScreenInsets } from '@/hooks/use-screen-insets'
+import { useScreenInsets } from "@/hooks/use-screen-insets";
 import {
   difficultyLabel,
   difficultyTint,
   fetchProblems,
   type Difficulty,
   type ProblemListItem,
-} from '@/lib/problems'
-import { colors } from '@/lib/theme'
-import { Feather, Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+} from "@/lib/problems";
+import { colors } from "@/lib/theme";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Modal,
@@ -20,74 +20,74 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const DIFFICULTIES: Difficulty[] = ['EASY', 'MEDIUM', 'HARD']
+const DIFFICULTIES: Difficulty[] = ["EASY", "MEDIUM", "HARD"];
 
 export default function ProblemsScreen() {
   const { contentPadding, sheetPaddingBottom } = useScreenInsets({
     bottomExtra: 24,
     topExtra: 12,
-  })
-  const [problems, setProblems] = useState<ProblemListItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  });
+  const [problems, setProblems] = useState<ProblemListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [activeDifficulties, setActiveDifficulties] = useState<Set<Difficulty>>(
-    new Set()
-  )
+    new Set(),
+  );
 
   const load = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true)
-    else setLoading(true)
-    setError(null)
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    setError(null);
     try {
-      const data = await fetchProblems()
-      setProblems(data)
+      const data = await fetchProblems();
+      setProblems(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load problems')
+      setError(err instanceof Error ? err.message : "Failed to load problems");
     } finally {
-      setLoading(false)
-      setRefreshing(false)
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void load()
-  }, [load])
+    void load();
+  }, [load]);
 
   const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase()
+    const query = search.trim().toLowerCase();
     return problems.filter((problem) => {
       if (
         activeDifficulties.size > 0 &&
         !activeDifficulties.has(problem.difficulty)
       ) {
-        return false
+        return false;
       }
-      if (!query) return true
+      if (!query) return true;
       return (
         problem.title.toLowerCase().includes(query) ||
         problem.tags.some((tag) => tag.toLowerCase().includes(query))
-      )
-    })
-  }, [problems, search, activeDifficulties])
+      );
+    });
+  }, [problems, search, activeDifficulties]);
 
   const toggleDifficulty = (difficulty: Difficulty) => {
     setActiveDifficulties((prev) => {
-      const next = new Set(prev)
-      if (next.has(difficulty)) next.delete(difficulty)
-      else next.add(difficulty)
-      return next
-    })
-  }
+      const next = new Set(prev);
+      if (next.has(difficulty)) next.delete(difficulty);
+      else next.add(difficulty);
+      return next;
+    });
+  };
 
   return (
     <View style={styles.screen}>
-      <SafeAreaView style={styles.safe} edges={['top']}>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
         <ScrollView
           contentContainerStyle={[styles.scroll, contentPadding]}
           showsVerticalScrollIndicator={false}
@@ -118,7 +118,7 @@ export default function ProblemsScreen() {
               returnKeyType="search"
             />
             {search.length > 0 ? (
-              <Pressable onPress={() => setSearch('')} hitSlop={8}>
+              <Pressable onPress={() => setSearch("")} hitSlop={8}>
                 <Feather name="x" size={14} color={colors.mutedDark} />
               </Pressable>
             ) : null}
@@ -131,7 +131,11 @@ export default function ProblemsScreen() {
               pressed && styles.pressed,
             ]}
           >
-            <Ionicons name="filter-outline" size={16} color={colors.foreground} />
+            <Ionicons
+              name="filter-outline"
+              size={16}
+              color={colors.foreground}
+            />
             <Text style={styles.filterLabel}>Filters</Text>
             {activeDifficulties.size > 0 ? (
               <View style={styles.filterCount}>
@@ -144,10 +148,17 @@ export default function ProblemsScreen() {
 
           <View style={styles.list}>
             {loading ? (
-              <ActivityIndicator color={colors.lime} style={{ marginTop: 40 }} />
+              <ActivityIndicator
+                color={colors.lime}
+                style={{ marginTop: 40 }}
+              />
             ) : error ? (
               <View style={styles.empty}>
-                <Feather name="alert-circle" size={28} color={colors.mutedDark} />
+                <Feather
+                  name="alert-circle"
+                  size={28}
+                  color={colors.mutedDark}
+                />
                 <Text style={styles.emptyTitle}>Could not load problems</Text>
                 <Text style={styles.emptySubtitle}>{error}</Text>
                 <Pressable
@@ -206,8 +217,8 @@ export default function ProblemsScreen() {
             <Text style={styles.modalSection}>DIFFICULTY</Text>
             <View style={styles.difficultyRow}>
               {DIFFICULTIES.map((difficulty) => {
-                const tint = difficultyTint(difficulty)
-                const active = activeDifficulties.has(difficulty)
+                const tint = difficultyTint(difficulty);
+                const active = activeDifficulties.has(difficulty);
                 return (
                   <Pressable
                     key={difficulty}
@@ -230,7 +241,7 @@ export default function ProblemsScreen() {
                       {difficultyLabel(difficulty)}
                     </Text>
                   </Pressable>
-                )
+                );
               })}
             </View>
 
@@ -247,11 +258,11 @@ export default function ProblemsScreen() {
         </View>
       </Modal>
     </View>
-  )
+  );
 }
 
 function ProblemCard({ problem }: { problem: ProblemListItem }) {
-  const tint = difficultyTint(problem.difficulty)
+  const tint = difficultyTint(problem.difficulty);
 
   return (
     <Pressable
@@ -276,7 +287,7 @@ function ProblemCard({ problem }: { problem: ProblemListItem }) {
         </View>
       ) : null}
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -291,36 +302,36 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   title: {
     color: colors.foreground,
     fontSize: 28,
     lineHeight: 34,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   countBadge: {
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 999,
-    backgroundColor: 'rgba(189, 240, 110, 0.12)',
+    backgroundColor: "rgba(189, 240, 110, 0.12)",
     borderWidth: 1,
-    borderColor: 'rgba(189, 240, 110, 0.28)',
+    borderColor: "rgba(189, 240, 110, 0.28)",
   },
   countText: {
     color: colors.lime,
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   searchBox: {
     marginTop: 20,
     height: 48,
     borderRadius: 16,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.cardBorder,
@@ -335,16 +346,16 @@ const styles = StyleSheet.create({
     marginTop: 12,
     height: 44,
     borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.cardBorder,
   },
   filterLabel: {
     color: colors.foreground,
-    fontWeight: '600',
+    fontWeight: "600",
     marginLeft: 8,
   },
   filterCount: {
@@ -353,14 +364,14 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     paddingHorizontal: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.lime,
   },
   filterCountText: {
     color: colors.background,
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   list: {
     marginTop: 20,
@@ -369,21 +380,21 @@ const styles = StyleSheet.create({
   empty: {
     borderRadius: 24,
     padding: 32,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: "rgba(255,255,255,0.06)",
   },
   emptyTitle: {
     color: colors.foreground,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 12,
   },
   emptySubtitle: {
     color: colors.muted,
     fontSize: 13,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 4,
   },
   retryButton: {
@@ -395,7 +406,7 @@ const styles = StyleSheet.create({
   },
   retryLabel: {
     color: colors.background,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   card: {
     borderRadius: 24,
@@ -408,12 +419,12 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontSize: 16,
     lineHeight: 22,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   cardMeta: {
     marginTop: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   difficultyBadge: {
@@ -423,20 +434,20 @@ const styles = StyleSheet.create({
   },
   difficultyBadgeText: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 1,
   },
   tagsRow: {
     marginTop: 12,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   tagChip: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
     borderColor: colors.cardBorder,
   },
@@ -449,15 +460,15 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.6)",
   },
   modalSheet: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
     paddingTop: 20,
-    backgroundColor: '#13141a',
+    backgroundColor: "#13141a",
     borderTopWidth: 1,
     borderColor: colors.cardBorder,
   },
@@ -465,23 +476,23 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    alignSelf: 'center',
+    backgroundColor: "rgba(255,255,255,0.18)",
+    alignSelf: "center",
     marginBottom: 16,
   },
   modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   modalTitle: {
     color: colors.foreground,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   clearText: {
     color: colors.lime,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   modalSection: {
     color: colors.muted,
@@ -491,30 +502,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   difficultyRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   difficultyChip: {
     flex: 1,
     borderRadius: 16,
     paddingVertical: 12,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 1,
   },
   difficultyChipText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   applyButton: {
     marginTop: 24,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 16,
     backgroundColor: colors.lime,
   },
   applyLabel: {
     color: colors.background,
-    fontWeight: '700',
+    fontWeight: "700",
   },
-})
+});

@@ -1,9 +1,6 @@
-import { CodeEditor } from '@/components/code-editor'
-import { useScreenInsets } from '@/hooks/use-screen-insets'
-import {
-  submitSolution,
-  type CaseResult,
-} from '@/lib/codebox'
+import { CodeEditor } from "@/components/code-editor";
+import { useScreenInsets } from "@/hooks/use-screen-insets";
+import { submitSolution, type CaseResult } from "@/lib/codebox";
 import {
   fetchProblemById,
   getAvailableLanguages,
@@ -14,11 +11,11 @@ import {
   LANGUAGE_TINT,
   type LanguageId,
   type Problem,
-} from '@/lib/problems'
-import { colors } from '@/lib/theme'
-import { Feather, Ionicons } from '@expo/vector-icons'
-import { router, useLocalSearchParams } from 'expo-router'
-import { useEffect, useMemo, useState } from 'react'
+} from "@/lib/problems";
+import { colors } from "@/lib/theme";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -29,156 +26,165 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const mono = Platform.select({
-  ios: 'Menlo',
-  android: 'monospace',
-  default: 'Courier',
-})
+  ios: "Menlo",
+  android: "monospace",
+  default: "Courier",
+});
 
 export default function SolveProblemScreen() {
   const { contentPadding } = useScreenInsets({
     includeBottomInset: true,
     bottomExtra: 28,
     topExtra: 6,
-  })
-  const { id } = useLocalSearchParams<{ id: string }>()
-  const [problem, setProblem] = useState<Problem | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [language, setLanguage] = useState<LanguageId>('javascript')
-  const [code, setCode] = useState('')
-  const [touched, setTouched] = useState(false)
-  const [pickerOpen, setPickerOpen] = useState(false)
-  const [activeCase, setActiveCase] = useState(0)
-  const [running, setRunning] = useState(false)
-  const [results, setResults] = useState<CaseResult[] | null>(null)
-  const [resultsOpen, setResultsOpen] = useState(false)
-  const [solved, setSolved] = useState(false)
+  });
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState<LanguageId>("javascript");
+  const [code, setCode] = useState("");
+  const [touched, setTouched] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [activeCase, setActiveCase] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [results, setResults] = useState<CaseResult[] | null>(null);
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const [solved, setSolved] = useState(false);
 
   useEffect(() => {
-    let active = true
+    let active = true;
 
     async function load() {
-      if (!id) return
-      setLoading(true)
+      if (!id) return;
+      setLoading(true);
       try {
-        const data = await fetchProblemById(id)
-        if (!active) return
-        setProblem(data)
+        const data = await fetchProblemById(id);
+        if (!active) return;
+        setProblem(data);
         if (data) {
-          const langs = getAvailableLanguages(data)
-          const initial = langs[0] ?? 'javascript'
-          setLanguage(initial)
-          setCode(getStarterCode(data, initial))
-          setTouched(false)
-          setActiveCase(0)
+          const langs = getAvailableLanguages(data);
+          const initial = langs[0] ?? "javascript";
+          setLanguage(initial);
+          setCode(getStarterCode(data, initial));
+          setTouched(false);
+          setActiveCase(0);
         }
       } finally {
-        if (active) setLoading(false)
+        if (active) setLoading(false);
       }
     }
 
-    void load()
+    void load();
     return () => {
-      active = false
-    }
-  }, [id])
+      active = false;
+    };
+  }, [id]);
 
   const availableLanguages = useMemo(
     () => (problem ? getAvailableLanguages(problem) : []),
-    [problem]
-  )
+    [problem],
+  );
 
   const sampleCases = useMemo(
     () => (problem ? getExamples(problem) : []),
-    [problem]
-  )
+    [problem],
+  );
 
   useEffect(() => {
-    if (!problem || touched) return
-    setCode(getStarterCode(problem, language))
-  }, [language, problem, touched])
+    if (!problem || touched) return;
+    setCode(getStarterCode(problem, language));
+  }, [language, problem, touched]);
 
   const summary = useMemo(() => {
-    if (!results) return null
-    const passed = results.filter((r) => r.outcome === 'accepted').length
-    return { passed, total: results.length }
-  }, [results])
+    if (!results) return null;
+    const passed = results.filter((r) => r.outcome === "accepted").length;
+    return { passed, total: results.length };
+  }, [results]);
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.centered} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.centered} edges={["top", "bottom"]}>
         <ActivityIndicator color={colors.lime} />
       </SafeAreaView>
-    )
+    );
   }
 
   if (!problem) {
     return (
-      <SafeAreaView style={styles.centered} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.centered} edges={["top", "bottom"]}>
         <Feather name="alert-circle" size={32} color={colors.mutedDark} />
         <Text style={styles.notFoundTitle}>Problem not found</Text>
         <Pressable
-          onPress={() => router.replace('/problems' as never)}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+          onPress={() => router.replace("/problems" as never)}
+          style={({ pressed }) => [
+            styles.backButton,
+            pressed && styles.pressed,
+          ]}
         >
           <Text style={styles.backButtonLabel}>Back to problems</Text>
         </Pressable>
       </SafeAreaView>
-    )
+    );
   }
 
-  const currentCase = sampleCases[activeCase]
+  const currentCase = sampleCases[activeCase];
 
   const handleReset = () => {
     Alert.alert(
-      'Reset code?',
-      'This will replace your edits with the starter code.',
+      "Reset code?",
+      "This will replace your edits with the starter code.",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Reset',
-          style: 'destructive',
+          text: "Reset",
+          style: "destructive",
           onPress: () => {
-            setCode(getStarterCode(problem, language))
-            setTouched(false)
-            setResults(null)
-            setSolved(false)
+            setCode(getStarterCode(problem, language));
+            setTouched(false);
+            setResults(null);
+            setSolved(false);
           },
         },
-      ]
-    )
-  }
+      ],
+    );
+  };
 
   const handleSubmit = async () => {
-    if (running || !problem) return
-    setRunning(true)
-    setResults(null)
-    setSolved(false)
+    if (running || !problem) return;
+    setRunning(true);
+    setResults(null);
+    setSolved(false);
     try {
       const response = await submitSolution({
         problemId: problem.id,
         language,
         sourceCode: code,
-      })
-      setResults(response.results)
-      setSolved(response.solved)
-      setResultsOpen(true)
+      });
+      setResults(response.results);
+      setSolved(response.solved);
+      setResultsOpen(true);
       if (response.solved) {
-        Alert.alert('Accepted', 'All test cases passed. Problem marked as solved.')
+        Alert.alert(
+          "Accepted",
+          "All test cases passed. Problem marked as solved.",
+        );
       }
     } catch (err) {
-      Alert.alert('Submit failed', err instanceof Error ? err.message : 'Unknown error')
+      Alert.alert(
+        "Submit failed",
+        err instanceof Error ? err.message : "Unknown error",
+      );
     } finally {
-      setRunning(false)
+      setRunning(false);
     }
-  }
+  };
 
   return (
     <View style={styles.screen}>
-      <SafeAreaView style={styles.safe} edges={['top']}>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
         <ScrollView
           contentContainerStyle={[styles.scroll, contentPadding]}
           showsVerticalScrollIndicator={false}
@@ -196,7 +202,11 @@ export default function SolveProblemScreen() {
                   pressed && styles.pressed,
                 ]}
               >
-                <Feather name="arrow-left" size={18} color={colors.foreground} />
+                <Feather
+                  name="arrow-left"
+                  size={18}
+                  color={colors.foreground}
+                />
               </Pressable>
               <Text style={styles.navTitle} numberOfLines={1}>
                 {problem.title}
@@ -240,8 +250,8 @@ export default function SolveProblemScreen() {
               <Pressable
                 hitSlop={6}
                 onPress={() => {
-                  setCode(getStarterCode(problem, language))
-                  setTouched(false)
+                  setCode(getStarterCode(problem, language));
+                  setTouched(false);
                 }}
                 style={({ pressed }) => pressed && styles.pressed}
               >
@@ -252,8 +262,8 @@ export default function SolveProblemScreen() {
             <CodeEditor
               value={code}
               onValueChange={(next) => {
-                setCode(next)
-                setTouched(true)
+                setCode(next);
+                setTouched(true);
               }}
               language={language}
               minHeight={280}
@@ -272,7 +282,7 @@ export default function SolveProblemScreen() {
             <>
               <View style={styles.caseTabs}>
                 {sampleCases.map((_, index) => {
-                  const active = activeCase === index
+                  const active = activeCase === index;
                   return (
                     <Pressable
                       key={index}
@@ -292,7 +302,7 @@ export default function SolveProblemScreen() {
                         Case {index + 1}
                       </Text>
                     </Pressable>
-                  )
+                  );
                 })}
               </View>
 
@@ -326,12 +336,12 @@ export default function SolveProblemScreen() {
                 {
                   backgroundColor:
                     summary.passed === summary.total
-                      ? 'rgba(134,239,172,0.10)'
-                      : 'rgba(252,165,165,0.10)',
+                      ? "rgba(134,239,172,0.10)"
+                      : "rgba(252,165,165,0.10)",
                   borderColor:
                     summary.passed === summary.total
-                      ? 'rgba(134,239,172,0.3)'
-                      : 'rgba(252,165,165,0.3)',
+                      ? "rgba(134,239,172,0.3)"
+                      : "rgba(252,165,165,0.3)",
                 },
                 pressed && styles.pressed,
               ]}
@@ -340,12 +350,12 @@ export default function SolveProblemScreen() {
                 <Feather
                   name={
                     summary.passed === summary.total
-                      ? 'check-circle'
-                      : 'x-circle'
+                      ? "check-circle"
+                      : "x-circle"
                   }
                   size={16}
                   color={
-                    summary.passed === summary.total ? '#86efac' : '#fca5a5'
+                    summary.passed === summary.total ? "#86efac" : "#fca5a5"
                   }
                 />
                 <Text
@@ -354,13 +364,13 @@ export default function SolveProblemScreen() {
                     {
                       color:
                         summary.passed === summary.total
-                          ? '#86efac'
-                          : '#fca5a5',
+                          ? "#86efac"
+                          : "#fca5a5",
                     },
                   ]}
                 >
                   {summary.passed}/{summary.total} test cases passed
-                  {solved ? ' · Solved' : ''}
+                  {solved ? " · Solved" : ""}
                 </Text>
               </View>
               <Text style={styles.summaryHint}>View details</Text>
@@ -395,8 +405,8 @@ export default function SolveProblemScreen() {
         languages={availableLanguages}
         onClose={() => setPickerOpen(false)}
         onSelect={(lang) => {
-          setLanguage(lang)
-          setPickerOpen(false)
+          setLanguage(lang);
+          setPickerOpen(false);
         }}
       />
 
@@ -407,7 +417,7 @@ export default function SolveProblemScreen() {
         solved={solved}
       />
     </View>
-  )
+  );
 }
 
 function ResultsSheet({
@@ -416,12 +426,12 @@ function ResultsSheet({
   results,
   solved,
 }: {
-  visible: boolean
-  onClose: () => void
-  results: CaseResult[] | null
-  solved: boolean
+  visible: boolean;
+  onClose: () => void;
+  results: CaseResult[] | null;
+  solved: boolean;
 }) {
-  const { sheetPaddingBottom } = useScreenInsets()
+  const { sheetPaddingBottom } = useScreenInsets();
 
   return (
     <Modal
@@ -436,13 +446,13 @@ function ResultsSheet({
         <View
           style={[
             styles.resultsSheet,
-            { paddingBottom: sheetPaddingBottom, maxHeight: '80%' },
+            { paddingBottom: sheetPaddingBottom, maxHeight: "80%" },
           ]}
         >
           <View style={styles.modalHandle} />
           <View style={styles.resultsHeader}>
             <Text style={styles.modalTitle}>
-              Run results{solved ? ' · Solved' : ''}
+              Run results{solved ? " · Solved" : ""}
             </Text>
             <Pressable onPress={onClose} hitSlop={8}>
               <Feather name="x" size={18} color={colors.muted} />
@@ -459,16 +469,16 @@ function ResultsSheet({
         </View>
       </View>
     </Modal>
-  )
+  );
 }
 
 function ResultRow({ result }: { result: CaseResult }) {
   const tint =
-    result.outcome === 'accepted'
-      ? { fg: '#86efac', bg: 'rgba(134,239,172,0.10)', label: 'Accepted' }
-      : result.outcome === 'wrong-answer'
-        ? { fg: '#fca5a5', bg: 'rgba(252,165,165,0.10)', label: 'Wrong Answer' }
-        : { fg: '#fdba74', bg: 'rgba(253,186,116,0.10)', label: 'Error' }
+    result.outcome === "accepted"
+      ? { fg: "#86efac", bg: "rgba(134,239,172,0.10)", label: "Accepted" }
+      : result.outcome === "wrong-answer"
+        ? { fg: "#fca5a5", bg: "rgba(252,165,165,0.10)", label: "Wrong Answer" }
+        : { fg: "#fdba74", bg: "rgba(253,186,116,0.10)", label: "Error" };
 
   return (
     <View style={styles.resultRow}>
@@ -489,13 +499,13 @@ function ResultRow({ result }: { result: CaseResult }) {
 
       <Text style={styles.resultLabel}>OUTPUT</Text>
       <Text style={[styles.resultValue, { color: tint.fg }]}>
-        {result.actualOutput || '(empty)'}
+        {result.actualOutput || "(empty)"}
       </Text>
 
       {result.stderr ? (
         <>
           <Text style={styles.resultLabel}>STDERR</Text>
-          <Text style={[styles.resultValue, { color: '#fca5a5' }]}>
+          <Text style={[styles.resultValue, { color: "#fca5a5" }]}>
             {result.stderr}
           </Text>
         </>
@@ -520,7 +530,7 @@ function ResultRow({ result }: { result: CaseResult }) {
         </View>
       ) : null}
     </View>
-  )
+  );
 }
 
 function LanguagePicker({
@@ -530,13 +540,13 @@ function LanguagePicker({
   onClose,
   onSelect,
 }: {
-  visible: boolean
-  active: LanguageId
-  languages: LanguageId[]
-  onClose: () => void
-  onSelect: (lang: LanguageId) => void
+  visible: boolean;
+  active: LanguageId;
+  languages: LanguageId[];
+  onClose: () => void;
+  onSelect: (lang: LanguageId) => void;
 }) {
-  const { sheetPaddingBottom } = useScreenInsets()
+  const { sheetPaddingBottom } = useScreenInsets();
 
   return (
     <Modal
@@ -548,12 +558,14 @@ function LanguagePicker({
     >
       <View style={styles.modalBackdrop}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-        <View style={[styles.modalSheet, { paddingBottom: sheetPaddingBottom }]}>
+        <View
+          style={[styles.modalSheet, { paddingBottom: sheetPaddingBottom }]}
+        >
           <View style={styles.modalHandle} />
           <Text style={styles.modalTitle}>Pick a language</Text>
           <View style={{ gap: 8 }}>
             {languages.map((lang) => {
-              const isActive = active === lang
+              const isActive = active === lang;
               return (
                 <Pressable
                   key={lang}
@@ -562,10 +574,10 @@ function LanguagePicker({
                     styles.languageOption,
                     {
                       backgroundColor: isActive
-                        ? 'rgba(189,240,110,0.10)'
+                        ? "rgba(189,240,110,0.10)"
                         : colors.card,
                       borderColor: isActive
-                        ? 'rgba(189,240,110,0.35)'
+                        ? "rgba(189,240,110,0.35)"
                         : colors.cardBorder,
                     },
                     pressed && styles.pressed,
@@ -591,13 +603,13 @@ function LanguagePicker({
                     <Feather name="check" size={16} color={colors.lime} />
                   ) : null}
                 </Pressable>
-              )
+              );
             })}
           </View>
         </View>
       </View>
     </Modal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -610,15 +622,15 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 24,
     backgroundColor: colors.background,
   },
   notFoundTitle: {
     color: colors.foreground,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 16,
   },
   backButton: {
@@ -630,7 +642,7 @@ const styles = StyleSheet.create({
   },
   backButtonLabel: {
     color: colors.background,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   scroll: {
     flexGrow: 1,
@@ -638,22 +650,22 @@ const styles = StyleSheet.create({
   navRow: {
     height: 56,
     marginBottom: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   navLeft: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingRight: 12,
   },
   iconButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.cardBorder,
@@ -662,12 +674,12 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.foreground,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
     marginLeft: 12,
   },
   languageChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
@@ -680,77 +692,77 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   languageBadgeText: {
     color: colors.background,
     fontSize: 9,
-    fontWeight: '900',
+    fontWeight: "900",
   },
   languageLabel: {
     color: colors.foreground,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   editorCard: {
     borderRadius: 16,
-    backgroundColor: '#0f1014',
+    backgroundColor: "#0f1014",
     borderWidth: 1,
     borderColor: colors.cardBorder,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   editorToolbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
-    backgroundColor: 'rgba(255,255,255,0.02)',
+    borderBottomColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(255,255,255,0.02)",
   },
   toolbarDivider: {
     width: 1,
     height: 14,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: "rgba(255,255,255,0.08)",
     marginHorizontal: 12,
   },
   casesHeader: {
     marginTop: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   casesIcon: {
     width: 28,
     height: 28,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 8,
-    backgroundColor: 'rgba(253,186,116,0.18)',
+    backgroundColor: "rgba(253,186,116,0.18)",
   },
   casesTitle: {
     color: colors.foreground,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   caseTabs: {
     marginTop: 12,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   caseTab: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    borderBottomColor: "transparent",
   },
   caseTabActive: {
     borderBottomColor: colors.peach,
   },
   caseTabLabel: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   fieldLabel: {
     marginTop: 16,
@@ -763,9 +775,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: "rgba(255,255,255,0.06)",
   },
   fieldValue: {
     color: colors.foreground,
@@ -790,20 +802,20 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     borderWidth: 1,
   },
   summaryLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     paddingRight: 12,
   },
   summaryText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
     marginLeft: 8,
   },
   summaryHint: {
@@ -814,20 +826,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.06)',
+    borderTopColor: "rgba(255,255,255,0.06)",
   },
   submitButton: {
     height: 54,
     borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.peach,
   },
   submitLabel: {
-    color: '#1f1208',
+    color: "#1f1208",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginRight: 8,
   },
   pressed: {
@@ -838,14 +850,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
     paddingTop: 16,
-    backgroundColor: '#13141a',
+    backgroundColor: "#13141a",
     borderTopWidth: 1,
     borderColor: colors.cardBorder,
   },
   resultsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
   resultRow: {
@@ -853,19 +865,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     marginBottom: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
     borderColor: colors.cardBorder,
   },
   resultTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   resultCase: {
     color: colors.foreground,
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   resultBadge: {
     paddingHorizontal: 8,
@@ -874,7 +886,7 @@ const styles = StyleSheet.create({
   },
   resultBadgeText: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.6,
   },
   resultLabel: {
@@ -891,12 +903,12 @@ const styles = StyleSheet.create({
   },
   resultMeta: {
     marginTop: 12,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   resultMetaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   resultMetaText: {
     color: colors.muted,
@@ -905,15 +917,15 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.6)",
   },
   modalSheet: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
     paddingTop: 20,
-    backgroundColor: '#13141a',
+    backgroundColor: "#13141a",
     borderTopWidth: 1,
     borderColor: colors.cardBorder,
   },
@@ -921,19 +933,19 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    alignSelf: 'center',
+    backgroundColor: "rgba(255,255,255,0.18)",
+    alignSelf: "center",
     marginBottom: 16,
   },
   modalTitle: {
     color: colors.foreground,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 12,
   },
   languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -943,6 +955,6 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.foreground,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
-})
+});

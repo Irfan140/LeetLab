@@ -1,11 +1,11 @@
-import { useAuth } from '@/hooks/use-auth'
-import { useScreenInsets } from '@/hooks/use-screen-insets'
-import { fetchProblems, fetchSolvedCount } from '@/lib/problems'
-import { colors } from '@/lib/theme'
-import { getAvatar, getDisplayName, getInitials } from '@/lib/user'
-import { Feather, Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useAuth } from "@/hooks/use-auth";
+import { useScreenInsets } from "@/hooks/use-screen-insets";
+import { fetchProblems, fetchSolvedCount } from "@/lib/problems";
+import { colors } from "@/lib/theme";
+import { getAvatar, getDisplayName, getInitials } from "@/lib/user";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -14,37 +14,39 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const { contentPadding } = useScreenInsets({ bottomExtra: 24, topExtra: 8 })
-  const { user, isLoading } = useAuth()
-  const [firstProblemId, setFirstProblemId] = useState<string | null>(null)
-  const [solvedCount, setSolvedCount] = useState(0)
+  const { contentPadding } = useScreenInsets({ bottomExtra: 24, topExtra: 8 });
+  const { user, isLoading } = useAuth();
+  const [firstProblemId, setFirstProblemId] = useState<string | null>(null);
+  const [solvedCount, setSolvedCount] = useState(0);
 
   useEffect(() => {
-    if (!user?.id) return
-    fetchProblems().then((problems) => setFirstProblemId(problems[0]?.id ?? null))
-    fetchSolvedCount(user.id).then(setSolvedCount)
-  }, [user?.id])
+    if (!user?.id) return;
+    fetchProblems().then((problems) =>
+      setFirstProblemId(problems[0]?.id ?? null),
+    );
+    fetchSolvedCount(user.id).then(setSolvedCount);
+  }, [user?.id]);
 
   if (isLoading || !user) {
     return (
-      <SafeAreaView style={styles.loading} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.loading} edges={["top", "bottom"]}>
         <ActivityIndicator color={colors.lime} />
       </SafeAreaView>
-    )
+    );
   }
 
-  const displayName = getDisplayName(user)
-  const firstName = displayName.split(' ')[0] ?? 'Rider'
-  const initials = getInitials(displayName)
-  const avatarUrl = getAvatar(user)
+  const displayName = getDisplayName(user);
+  const firstName = displayName.split(" ")[0] ?? "Rider";
+  const initials = getInitials(displayName);
+  const avatarUrl = getAvatar(user);
 
   return (
     <View style={styles.screen}>
-      <SafeAreaView style={styles.safe} edges={['top']}>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
         <ScrollView
           contentContainerStyle={[styles.scroll, contentPadding]}
           showsVerticalScrollIndicator={false}
@@ -54,7 +56,7 @@ export default function HomeScreen() {
             <View style={styles.brandRow}>
               <View style={styles.logoBox}>
                 <Image
-                  source={require('../../../assets/images/logo.png')}
+                  source={require("../../../assets/images/logo.png")}
                   style={styles.logoImage}
                   resizeMode="contain"
                 />
@@ -109,7 +111,7 @@ export default function HomeScreen() {
               color={colors.peach}
               title="Browse problems"
               subtitle="Pick from the problem set"
-              onPress={() => router.push('/problems' as never)}
+              onPress={() => router.push("/problems" as never)}
             />
             <ActionCard
               icon="navigate"
@@ -118,9 +120,9 @@ export default function HomeScreen() {
               subtitle="Start with the first challenge"
               onPress={() => {
                 if (firstProblemId) {
-                  router.push(`/problems/${firstProblemId}` as never)
+                  router.push(`/problems/${firstProblemId}` as never);
                 } else {
-                  router.push('/problems' as never)
+                  router.push("/problems" as never);
                 }
               }}
             />
@@ -129,14 +131,18 @@ export default function HomeScreen() {
               color={colors.mint}
               title="Saved problems"
               subtitle="Bookmarks are coming soon"
-              onPress={() => router.push('/problems' as never)}
+              onPress={() => router.push("/problems" as never)}
             />
           </View>
 
           <View style={styles.weekSection}>
             <Text style={styles.sectionTitle}>This week</Text>
             <View style={styles.statsRow}>
-              <StatCard label="Solved" value={String(solvedCount)} tint={colors.lime} />
+              <StatCard
+                label="Solved"
+                value={String(solvedCount)}
+                tint={colors.lime}
+              />
               <StatCard label="Streak" value="0" tint={colors.peach} />
               <StatCard label="Saved" value="0" tint={colors.mint} />
             </View>
@@ -144,7 +150,7 @@ export default function HomeScreen() {
         </ScrollView>
       </SafeAreaView>
     </View>
-  )
+  );
 }
 
 function ActionCard({
@@ -154,11 +160,11 @@ function ActionCard({
   subtitle,
   onPress,
 }: {
-  icon: keyof typeof Ionicons.glyphMap
-  color: string
-  title: string
-  subtitle: string
-  onPress: () => void
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
 }) {
   return (
     <Pressable
@@ -174,7 +180,7 @@ function ActionCard({
       </View>
       <Feather name="chevron-right" size={18} color="#a1a1aa" />
     </Pressable>
-  )
+  );
 }
 
 function StatCard({
@@ -182,9 +188,9 @@ function StatCard({
   value,
   tint,
 }: {
-  label: string
-  value: string
-  tint: string
+  label: string;
+  value: string;
+  tint: string;
 }) {
   return (
     <View style={styles.statCard}>
@@ -192,7 +198,7 @@ function StatCard({
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -205,29 +211,29 @@ const styles = StyleSheet.create({
   },
   loading: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.background,
   },
   scroll: {
     flexGrow: 1,
   },
   topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   logoBox: {
     width: 40,
     height: 40,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
     backgroundColor: colors.limeSoft,
     borderWidth: 1,
     borderColor: colors.limeBorder,
@@ -239,33 +245,33 @@ const styles = StyleSheet.create({
   brand: {
     color: colors.foreground,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     marginLeft: 10,
   },
   welcomeRow: {
     marginTop: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   avatar: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    backgroundColor: 'rgba(189, 240, 110, 0.18)',
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    backgroundColor: "rgba(189, 240, 110, 0.18)",
     borderWidth: 2,
     borderColor: colors.lime,
   },
   avatarImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   avatarInitials: {
     color: colors.lime,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   welcomeText: {
     flex: 1,
@@ -279,20 +285,20 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontSize: 22,
     lineHeight: 28,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   heroCard: {
     marginTop: 20,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(189, 240, 110, 0.35)',
-    backgroundColor: 'rgba(189, 240, 110, 0.12)',
+    borderColor: "rgba(189, 240, 110, 0.35)",
+    backgroundColor: "rgba(189, 240, 110, 0.12)",
     padding: 18,
   },
   heroContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   heroTextWrap: {
     flex: 1,
@@ -302,7 +308,7 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontSize: 18,
     lineHeight: 24,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   heroSubtitle: {
     color: colors.muted,
@@ -314,20 +320,20 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(10, 10, 12, 0.4)',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(10, 10, 12, 0.4)",
   },
   sectionHeader: {
     marginTop: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   sectionTitle: {
     color: colors.foreground,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   sectionHint: {
     color: colors.muted,
@@ -339,8 +345,8 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
     backgroundColor: colors.card,
     borderWidth: 1,
@@ -353,8 +359,8 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   actionText: {
     flex: 1,
@@ -363,7 +369,7 @@ const styles = StyleSheet.create({
   actionTitle: {
     color: colors.foreground,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   actionSubtitle: {
     color: colors.muted,
@@ -375,7 +381,7 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     marginTop: 12,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   statCard: {
@@ -396,11 +402,11 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontSize: 18,
     lineHeight: 22,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   statLabel: {
     color: colors.muted,
     fontSize: 11,
     marginTop: 2,
   },
-})
+});
