@@ -70,7 +70,7 @@ export default function ProfileScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text style={styles.title}>Profile</Text>
-          <Text style={styles.subtitle}>Manage your MobLeet account.</Text>
+          <Text style={styles.subtitle}>Manage your account.</Text>
 
           <View style={styles.card}>
             <View style={styles.avatar}>

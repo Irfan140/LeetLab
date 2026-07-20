@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Mobleet",
-    "slug": "mobleet",
+    "name": "LeetLab",
+    "slug": "leetlab",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
-    "scheme": "mobleet",
-    "userInterfaceStyle": "dark", 
+    "scheme": "leetlab",
+    "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon"
     },
@@ -52,7 +52,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "9484ac17-e553-4b6b-b765-58318c77714f"
+        "projectId": "a9371cf2-7a7e-48f3-8b24-c659113acf5a"
       }
     },
     "owner": "irfan140"

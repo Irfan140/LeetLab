@@ -1,6 +1,6 @@
-# MobLeet
+# LeetLab
 
-MobLeet is a mobile-first coding practice app built with Expo, React Native, Supabase, and Expo Router. It lets users sign in, browse algorithm problems, write solutions on their phone, submit code against hidden test cases, and track their progress over time.
+LeetLab is a mobile-first coding practice app built with Expo, React Native, Supabase, and Expo Router. It lets users sign in, browse algorithm problems, write solutions on their phone, submit code against hidden test cases, and track their progress over time.
 
 ## Features
 

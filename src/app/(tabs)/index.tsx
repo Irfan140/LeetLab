@@ -59,7 +59,7 @@ export default function HomeScreen() {
                   resizeMode="contain"
                 />
               </View>
-              <Text style={styles.brand}>MobLeet</Text>
+              <Text style={styles.brand}>LeetLab</Text>
             </View>
           </View>
 
