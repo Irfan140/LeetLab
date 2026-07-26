@@ -1,19 +1,7 @@
 import Constants from "expo-constants";
-
-import type { CaseResult } from "@/lib/judge";
-import type { LanguageId } from "@/lib/problems";
+import { LanguageId } from "@/types/problem";
 import { supabase } from "@/lib/supabase";
-
-export type { CaseResult } from "@/lib/judge";
-
-export type SubmitResponse = {
-  submissionId: string;
-  status: string;
-  solved: boolean;
-  passed: number;
-  total: number;
-  results: CaseResult[];
-};
+import { SubmitResponse } from "@/types/codebox";
 
 export function resolveApiBaseUrl() {
   if (process.env.EXPO_PUBLIC_API_BASE_URL)

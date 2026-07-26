@@ -5,13 +5,7 @@ import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-python";
 
-import type { LanguageId } from "@/lib/problems";
-
-const GRAMMAR: Record<LanguageId, keyof typeof Prism.languages> = {
-  javascript: "javascript",
-  java: "java",
-  python: "python",
-};
+import { LanguageId, GRAMMAR } from "@/types/problem";
 
 export function grammarForLanguage(language: LanguageId) {
   const name = GRAMMAR[language];

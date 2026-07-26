@@ -1,3 +1,5 @@
+import Prism from "prismjs";
+
 export type Difficulty = "EASY" | "MEDIUM" | "HARD";
 export type LanguageId = "javascript" | "python" | "java";
 
@@ -58,4 +60,10 @@ export const LANGUAGE_BADGE: Record<LanguageId, string> = {
   javascript: "JS",
   python: "PY",
   java: "JV",
+};
+
+export const GRAMMAR: Record<LanguageId, keyof typeof Prism.languages> = {
+  javascript: "javascript",
+  java: "java",
+  python: "python",
 };

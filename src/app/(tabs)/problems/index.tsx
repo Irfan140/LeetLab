@@ -1,25 +1,20 @@
 import { useScreenInsets } from "@/hooks/use-screen-insets";
-import {
-    difficultyLabel,
-    difficultyTint,
-    fetchProblems,
-    type Difficulty,
-    type ProblemListItem,
-} from "@/lib/problems";
+import { difficultyLabel, difficultyTint, fetchProblems } from "@/lib/problems";
+import { Difficulty, ProblemListItem } from "@/types/problem";
 import { colors } from "@/theme/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Modal,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

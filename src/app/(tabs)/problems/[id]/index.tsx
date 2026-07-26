@@ -6,10 +6,8 @@ import {
     fetchUserSubmissionsForProblem,
     getConstraintLines,
     getExamples,
-    type LanguageExample,
-    type Problem,
-    type SubmissionListItem,
 } from "@/lib/problems";
+import {LanguageExample, Problem, SubmissionListItem} from "@/types/problem";
 import { colors } from "@/theme/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";

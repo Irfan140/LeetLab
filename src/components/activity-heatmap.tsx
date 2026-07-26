@@ -2,39 +2,14 @@ import { toDateKey } from "@/lib/problems";
 import { colors } from "@/theme/theme";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-
-const CELL = 12;
-const GAP = 3;
-const WEEKS = 53;
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-const LEVELS = [
-  "rgba(255,255,255,0.06)",
-  "rgba(189, 240, 110, 0.22)",
-  "rgba(189, 240, 110, 0.45)",
-  "rgba(189, 240, 110, 0.7)",
-  colors.lime,
-];
-
-type DayCell = {
-  key: string;
-  date: Date;
-  count: number;
-  level: number;
-  inRange: boolean;
-};
+import {
+  CELL,
+  GAP,
+  LEVELS,
+  MONTHS,
+  WEEKS,
+  DayCell,
+} from "@/types/activity-heatmap";
 
 function addDays(date: Date, amount: number) {
   const next = new Date(date);
