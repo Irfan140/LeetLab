@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/logo.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.codebysuraj.mobleet"
+      "package": "com.irfan140.LeetLab"
     },
     "web": {
       "output": "server",

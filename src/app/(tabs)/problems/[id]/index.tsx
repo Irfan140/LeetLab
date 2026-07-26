@@ -1,120 +1,124 @@
-import { useAuth } from '@/hooks/use-auth'
-import { useScreenInsets } from '@/hooks/use-screen-insets'
+import { useAuth } from "@/hooks/use-auth";
+import { useScreenInsets } from "@/hooks/use-screen-insets";
 import {
-  difficultyTint,
-  fetchProblemById,
-  fetchUserSubmissionsForProblem,
-  getConstraintLines,
-  getExamples,
-  type LanguageExample,
-  type Problem,
-  type SubmissionListItem,
-} from '@/lib/problems'
-import { colors } from '@/lib/theme'
-import { Feather, Ionicons } from '@expo/vector-icons'
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+    difficultyTint,
+    fetchProblemById,
+    fetchUserSubmissionsForProblem,
+    getConstraintLines,
+    getExamples,
+} from "@/lib/problems";
+import {LanguageExample, Problem, SubmissionListItem} from "@/types/problem";
+import { colors } from "@/theme/theme";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+    ActivityIndicator,
+    Alert,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type Tab = 'description' | 'solutions' | 'submissions'
+type Tab = "description" | "solutions" | "submissions";
 
-const TABS: { id: Tab; label: string; icon: keyof typeof Feather.glyphMap }[] = [
-  { id: 'description', label: 'Description', icon: 'file-text' },
-  { id: 'solutions', label: 'Solutions', icon: 'lock' },
-  { id: 'submissions', label: 'Submissions', icon: 'code' },
-]
+const TABS: { id: Tab; label: string; icon: keyof typeof Feather.glyphMap }[] =
+  [
+    { id: "description", label: "Description", icon: "file-text" },
+    { id: "solutions", label: "Solutions", icon: "lock" },
+    { id: "submissions", label: "Submissions", icon: "code" },
+  ];
 
 export default function ProblemDetailsScreen() {
   const { contentPadding } = useScreenInsets({
     includeBottomInset: true,
     bottomExtra: 28,
     topExtra: 8,
-  })
-  const { user } = useAuth()
-  const { id } = useLocalSearchParams<{ id: string }>()
-  const [problem, setProblem] = useState<Problem | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<Tab>('description')
-  const [submissions, setSubmissions] = useState<SubmissionListItem[]>([])
-  const [submissionsLoading, setSubmissionsLoading] = useState(false)
+  });
+  const { user } = useAuth();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<Tab>("description");
+  const [submissions, setSubmissions] = useState<SubmissionListItem[]>([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
 
   useEffect(() => {
-    let active = true
+    let active = true;
 
     async function load() {
-      if (!id) return
-      setLoading(true)
-      setError(null)
+      if (!id) return;
+      setLoading(true);
+      setError(null);
       try {
-        const data = await fetchProblemById(id)
-        if (!active) return
-        setProblem(data)
+        const data = await fetchProblemById(id);
+        if (!active) return;
+        setProblem(data);
       } catch (err) {
         if (active) {
-          setError(err instanceof Error ? err.message : 'Failed to load problem')
+          setError(
+            err instanceof Error ? err.message : "Failed to load problem",
+          );
         }
       } finally {
-        if (active) setLoading(false)
+        if (active) setLoading(false);
       }
     }
 
-    void load()
+    void load();
     return () => {
-      active = false
-    }
-  }, [id])
+      active = false;
+    };
+  }, [id]);
 
   useFocusEffect(
     useCallback(() => {
-      if (!id || !user?.id) return
-      setSubmissionsLoading(true)
+      if (!id || !user?.id) return;
+      setSubmissionsLoading(true);
       fetchUserSubmissionsForProblem(user.id, id)
         .then(setSubmissions)
-        .finally(() => setSubmissionsLoading(false))
-    }, [id, user?.id])
-  )
+        .finally(() => setSubmissionsLoading(false));
+    }, [id, user?.id]),
+  );
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.centered} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.centered} edges={["top", "bottom"]}>
         <ActivityIndicator color={colors.lime} />
       </SafeAreaView>
-    )
+    );
   }
 
   if (error || !problem) {
     return (
-      <SafeAreaView style={styles.centered} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.centered} edges={["top", "bottom"]}>
         <Feather name="alert-circle" size={32} color={colors.mutedDark} />
         <Text style={styles.notFoundTitle}>Problem not found</Text>
         <Text style={styles.notFoundSubtitle}>
           {error ?? `The problem with id "${id}" doesn't exist yet.`}
         </Text>
         <Pressable
-          onPress={() => router.replace('/problems' as never)}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+          onPress={() => router.replace("/problems" as never)}
+          style={({ pressed }) => [
+            styles.backButton,
+            pressed && styles.pressed,
+          ]}
         >
           <Text style={styles.backButtonLabel}>Back to problems</Text>
         </Pressable>
       </SafeAreaView>
-    )
+    );
   }
 
-  const tint = difficultyTint(problem.difficulty)
+  const tint = difficultyTint(problem.difficulty);
 
   return (
     <View style={styles.screen}>
-      <SafeAreaView style={styles.safe} edges={['top']}>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
         <ScrollView
           contentContainerStyle={[styles.scroll, contentPadding]}
           showsVerticalScrollIndicator={false}
@@ -136,7 +140,9 @@ export default function ProblemDetailsScreen() {
 
           <View style={styles.titleRow}>
             <Text style={styles.problemTitle}>{problem.title}</Text>
-            <View style={[styles.difficultyBadge, { backgroundColor: tint.bg }]}>
+            <View
+              style={[styles.difficultyBadge, { backgroundColor: tint.bg }]}
+            >
               <Text style={[styles.difficultyText, { color: tint.fg }]}>
                 {problem.difficulty}
               </Text>
@@ -147,12 +153,15 @@ export default function ProblemDetailsScreen() {
             <View style={styles.metaLeft}>
               <Feather name="tag" size={13} color={colors.lime} />
               <Text style={styles.metaText}>
-                {problem.tags.slice(0, 2).join(' · ') || 'General'}
+                {problem.tags.slice(0, 2).join(" · ") || "General"}
               </Text>
             </View>
             <Pressable
               onPress={() =>
-                Alert.alert('Report bug', 'Thanks! Bug reporting is coming soon.')
+                Alert.alert(
+                  "Report bug",
+                  "Thanks! Bug reporting is coming soon.",
+                )
               }
               hitSlop={6}
               style={({ pressed }) => [
@@ -167,7 +176,7 @@ export default function ProblemDetailsScreen() {
 
           <View style={styles.tabs}>
             {TABS.map((tab) => {
-              const active = activeTab === tab.id
+              const active = activeTab === tab.id;
               return (
                 <Pressable
                   key={tab.id}
@@ -194,22 +203,22 @@ export default function ProblemDetailsScreen() {
                   </View>
                   {active ? <View style={styles.tabIndicator} /> : null}
                 </Pressable>
-              )
+              );
             })}
           </View>
 
           <View style={styles.tabBody}>
-            {activeTab === 'description' ? (
+            {activeTab === "description" ? (
               <DescriptionTab problem={problem} />
             ) : null}
-            {activeTab === 'solutions' ? (
+            {activeTab === "solutions" ? (
               <LockedTab
                 title="Solutions are locked"
                 subtitle="Submit a passing answer to unlock community solutions."
                 icon="lock"
               />
             ) : null}
-            {activeTab === 'submissions' ? (
+            {activeTab === "submissions" ? (
               <SubmissionsTab
                 submissions={submissions}
                 loading={submissionsLoading}
@@ -234,12 +243,12 @@ export default function ProblemDetailsScreen() {
         </ScrollView>
       </SafeAreaView>
     </View>
-  )
+  );
 }
 
 function DescriptionTab({ problem }: { problem: Problem }) {
-  const examples = getExamples(problem)
-  const constraints = getConstraintLines(problem.constraints)
+  const examples = getExamples(problem);
+  const constraints = getConstraintLines(problem.constraints);
 
   return (
     <View>
@@ -283,15 +292,15 @@ function DescriptionTab({ problem }: { problem: Problem }) {
         </View>
       ) : null}
     </View>
-  )
+  );
 }
 
 function ExampleBlock({
   example,
   index,
 }: {
-  example: LanguageExample
-  index: number
+  example: LanguageExample;
+  index: number;
 }) {
   return (
     <View style={styles.section}>
@@ -310,17 +319,17 @@ function ExampleBlock({
         ) : null}
       </View>
     </View>
-  )
+  );
 }
 
 function RichDescription({ text }: { text: string }) {
-  const blocks = text.split(/\n\n+/)
+  const blocks = text.split(/\n\n+/);
 
   return (
     <View style={{ gap: 12 }}>
       {blocks.map((block, idx) => {
-        const lines = block.split('\n')
-        const isList = lines.every((line) => line.startsWith('- '))
+        const lines = block.split("\n");
+        const isList = lines.every((line) => line.startsWith("- "));
         if (isList) {
           return (
             <View key={idx} style={{ gap: 6 }}>
@@ -331,37 +340,37 @@ function RichDescription({ text }: { text: string }) {
                 </View>
               ))}
             </View>
-          )
+          );
         }
 
-        return <BoldText key={idx} text={block} style={styles.bodyText} />
+        return <BoldText key={idx} text={block} style={styles.bodyText} />;
       })}
     </View>
-  )
+  );
 }
 
 function BoldText({
   text,
   style,
 }: {
-  text: string
-  style: { fontSize: number; lineHeight: number; color?: string }
+  text: string;
+  style: { fontSize: number; lineHeight: number; color?: string };
 }) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return (
     <Text style={[styles.bodyText, style]}>
       {parts.map((part, idx) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
+        if (part.startsWith("**") && part.endsWith("**")) {
           return (
             <Text key={idx} style={styles.boldPart}>
               {part.slice(2, -2)}
             </Text>
-          )
+          );
         }
-        return <Text key={idx}>{part}</Text>
+        return <Text key={idx}>{part}</Text>;
       })}
     </Text>
-  )
+  );
 }
 
 function LockedTab({
@@ -369,9 +378,9 @@ function LockedTab({
   subtitle,
   icon,
 }: {
-  title: string
-  subtitle: string
-  icon: keyof typeof Feather.glyphMap
+  title: string;
+  subtitle: string;
+  icon: keyof typeof Feather.glyphMap;
 }) {
   return (
     <View style={styles.lockedCard}>
@@ -381,32 +390,32 @@ function LockedTab({
       <Text style={styles.lockedTitle}>{title}</Text>
       <Text style={styles.lockedSubtitle}>{subtitle}</Text>
     </View>
-  )
+  );
 }
 
 function statusTint(status: string) {
-  if (status.toLowerCase().includes('accepted')) {
-    return { fg: colors.success, bg: colors.successBg }
+  if (status.toLowerCase().includes("accepted")) {
+    return { fg: colors.success, bg: colors.successBg };
   }
-  if (status.toLowerCase().includes('wrong')) {
-    return { fg: colors.danger, bg: colors.dangerBg }
+  if (status.toLowerCase().includes("wrong")) {
+    return { fg: colors.danger, bg: colors.dangerBg };
   }
-  return { fg: colors.warning, bg: colors.warningBg }
+  return { fg: colors.warning, bg: colors.warningBg };
 }
 
 function SubmissionsTab({
   submissions,
   loading,
 }: {
-  submissions: SubmissionListItem[]
-  loading: boolean
+  submissions: SubmissionListItem[];
+  loading: boolean;
 }) {
   if (loading) {
     return (
       <View style={styles.submissionsLoading}>
         <ActivityIndicator color={colors.lime} />
       </View>
-    )
+    );
   }
 
   if (submissions.length === 0) {
@@ -416,13 +425,13 @@ function SubmissionsTab({
         subtitle="Once you run your first attempt it will appear here."
         icon="inbox"
       />
-    )
+    );
   }
 
   return (
     <View style={styles.submissionsList}>
       {submissions.map((submission) => {
-        const tint = statusTint(submission.status)
+        const tint = statusTint(submission.status);
         return (
           <View key={submission.id} style={styles.submissionCard}>
             <View style={styles.submissionTop}>
@@ -433,10 +442,10 @@ function SubmissionsTab({
               </View>
               <Text style={styles.submissionDate}>
                 {new Date(submission.created_at).toLocaleString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit',
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
                 })}
               </Text>
             </View>
@@ -451,7 +460,9 @@ function SubmissionsTab({
               {submission.time ? (
                 <View style={styles.submissionMetaItem}>
                   <Feather name="clock" size={12} color={colors.muted} />
-                  <Text style={styles.submissionMetaText}>{submission.time}</Text>
+                  <Text style={styles.submissionMetaText}>
+                    {submission.time}
+                  </Text>
                 </View>
               ) : null}
               {submission.memory ? (
@@ -464,10 +475,10 @@ function SubmissionsTab({
               ) : null}
             </View>
           </View>
-        )
+        );
       })}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -480,21 +491,21 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 24,
     backgroundColor: colors.background,
   },
   notFoundTitle: {
     color: colors.foreground,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 16,
   },
   notFoundSubtitle: {
     color: colors.muted,
     fontSize: 13,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 8,
   },
   backButton: {
@@ -506,7 +517,7 @@ const styles = StyleSheet.create({
   },
   backButtonLabel: {
     color: colors.background,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   scroll: {
     flexGrow: 1,
@@ -514,15 +525,15 @@ const styles = StyleSheet.create({
   navRow: {
     height: 48,
     marginBottom: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.cardBorder,
@@ -530,13 +541,13 @@ const styles = StyleSheet.create({
   navTitle: {
     color: colors.foreground,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     marginLeft: 12,
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   problemTitle: {
     flex: 1,
@@ -544,7 +555,7 @@ const styles = StyleSheet.create({
     color: colors.foreground,
     fontSize: 22,
     lineHeight: 28,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   difficultyBadge: {
     paddingHorizontal: 10,
@@ -553,18 +564,18 @@ const styles = StyleSheet.create({
   },
   difficultyText: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 1,
   },
   metaRow: {
     marginTop: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   metaLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     paddingRight: 12,
   },
@@ -577,8 +588,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.cardBorder,
@@ -590,30 +601,30 @@ const styles = StyleSheet.create({
   },
   tabs: {
     marginTop: 20,
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: colors.cardBorder,
   },
   tabItem: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 4,
     paddingBottom: 12,
   },
   tabLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   tabLabel: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     marginLeft: 6,
   },
   tabIndicator: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -1,
-    left: '20%',
-    right: '20%',
+    left: "20%",
+    right: "20%",
     height: 2,
     borderRadius: 2,
     backgroundColor: colors.peach,
@@ -627,7 +638,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: colors.foreground,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   bodyText: {
     color: colors.muted,
@@ -636,22 +647,22 @@ const styles = StyleSheet.create({
   },
   boldPart: {
     color: colors.foreground,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   codeBlock: {
     marginTop: 8,
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: "rgba(255,255,255,0.06)",
   },
   codeLine: {
     color: colors.foreground,
     fontSize: 13,
     lineHeight: 20,
-    fontFamily: 'Courier',
+    fontFamily: "Courier",
   },
   codeMuted: {
     color: colors.muted,
@@ -667,8 +678,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   constraintRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
   },
   bullet: {
     color: colors.muted,
@@ -681,7 +692,7 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 13,
     lineHeight: 20,
-    fontFamily: 'Courier',
+    fontFamily: "Courier",
   },
   tagsLabel: {
     color: colors.muted,
@@ -690,8 +701,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   tagChip: {
@@ -709,35 +720,35 @@ const styles = StyleSheet.create({
   lockedCard: {
     borderRadius: 24,
     padding: 32,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: "rgba(255,255,255,0.06)",
   },
   lockedIcon: {
     width: 48,
     height: 48,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.limeSoft,
   },
   lockedTitle: {
     color: colors.foreground,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 16,
   },
   lockedSubtitle: {
     color: colors.muted,
     fontSize: 13,
     lineHeight: 19,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 8,
   },
   submissionsLoading: {
     paddingVertical: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   submissionsList: {
     gap: 12,
@@ -750,9 +761,9 @@ const styles = StyleSheet.create({
     borderColor: colors.cardBorder,
   },
   submissionTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: 12,
   },
   statusBadge: {
@@ -762,7 +773,7 @@ const styles = StyleSheet.create({
   },
   statusBadgeText: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.6,
   },
   submissionDate: {
@@ -771,13 +782,13 @@ const styles = StyleSheet.create({
   },
   submissionMeta: {
     marginTop: 12,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
   },
   submissionMetaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   submissionMetaText: {
@@ -788,23 +799,23 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.06)',
+    borderTopColor: "rgba(255,255,255,0.06)",
   },
   submitButton: {
     height: 54,
     borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.peach,
   },
   submitLabel: {
-    color: '#1f1208',
+    color: "#1f1208",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginRight: 8,
   },
   pressed: {
     opacity: 0.75,
   },
-})
+});
