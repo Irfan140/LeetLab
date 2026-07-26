@@ -1,5 +1,5 @@
 import { useTabBarStyle } from "@/hooks/use-tab-bar-style";
-import { colors } from "@/lib/theme";
+import { colors } from "@/theme/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 

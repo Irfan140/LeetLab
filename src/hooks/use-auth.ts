@@ -1,4 +1,3 @@
-// src/hooks/use-auth.ts
 import { useAuthStore } from "@/state/auth-store";
 
 export function useAuth() {

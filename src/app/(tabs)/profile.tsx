@@ -2,20 +2,20 @@ import { ActivityHeatmap } from "@/components/activity-heatmap";
 import { useAuth } from "@/hooks/use-auth";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { fetchSolvedCount, fetchUserSubmissionActivity } from "@/lib/problems";
-import { colors } from "@/lib/theme";
 import { getAvatar, getDisplayName, getInitials } from "@/lib/user";
+import { colors } from "@/theme/theme";
 import { Feather } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

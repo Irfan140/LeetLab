@@ -1,5 +1,5 @@
 import { toDateKey } from "@/lib/problems";
-import { colors } from "@/lib/theme";
+import { colors } from "@/theme/theme";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 

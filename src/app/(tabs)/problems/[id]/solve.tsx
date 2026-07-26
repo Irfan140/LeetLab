@@ -2,30 +2,30 @@ import { CodeEditor } from "@/components/code-editor";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { submitSolution, type CaseResult } from "@/lib/codebox";
 import {
-  fetchProblemById,
-  getAvailableLanguages,
-  getExamples,
-  getStarterCode,
-  LANGUAGE_BADGE,
-  LANGUAGE_LABEL,
-  LANGUAGE_TINT,
-  type LanguageId,
-  type Problem,
+    fetchProblemById,
+    getAvailableLanguages,
+    getExamples,
+    getStarterCode,
+    LANGUAGE_BADGE,
+    LANGUAGE_LABEL,
+    LANGUAGE_TINT,
+    type LanguageId,
+    type Problem,
 } from "@/lib/problems";
-import { colors } from "@/lib/theme";
+import { colors } from "@/theme/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

@@ -1,5 +1,5 @@
 import { useHideTabBar } from "@/hooks/use-tab-bar-style";
-import { colors } from "@/lib/theme";
+import { colors } from "@/theme/theme";
 import { Stack } from "expo-router";
 
 export default function ProblemIdLayout() {

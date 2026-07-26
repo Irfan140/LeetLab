@@ -7,13 +7,14 @@ import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-url-polyfill/auto";
 
+// untill the root layout is mounted, we don't want the splash screen to hide
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
   const session = useAuthStore((s) => s.session);
   const isLoading = useAuthStore((s) => s.isLoading);
   const initialize = useAuthStore((s) => s.initialize);
-  const segments = useSegments();
+  const segments = useSegments(); // tells us which route group we are in, e.g. (auth) or (tabs)
   const router = useRouter();
 
   useEffect(() => {

@@ -1,27 +1,27 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import {
-  difficultyTint,
-  fetchProblemById,
-  fetchUserSubmissionsForProblem,
-  getConstraintLines,
-  getExamples,
-  type LanguageExample,
-  type Problem,
-  type SubmissionListItem,
+    difficultyTint,
+    fetchProblemById,
+    fetchUserSubmissionsForProblem,
+    getConstraintLines,
+    getExamples,
+    type LanguageExample,
+    type Problem,
+    type SubmissionListItem,
 } from "@/lib/problems";
-import { colors } from "@/lib/theme";
+import { colors } from "@/theme/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

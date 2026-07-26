@@ -1,20 +1,20 @@
+import { signInWithOAuth } from "@/lib/auth";
+import { colors } from "@/theme/theme";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Linking,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Image,
+    Linking,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as WebBrowser from "expo-web-browser";
-import { signInWithOAuth } from "@/lib/auth";
-import { colors } from "@/lib/theme";
 
 type Provider = "github" | "google";
 

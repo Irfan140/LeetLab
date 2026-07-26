@@ -1,18 +1,7 @@
 import { createSessionFromUrl, isAuthCallbackUrl } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
-import type { Session, User } from "@supabase/supabase-js";
 import { create } from "zustand";
-
-interface AuthStore {
-  session: Session | null;
-  user: User | null;
-  isLoading: boolean;
-  isInitialized: boolean;
-
-  initialize: () => () => void;
-  handleDeepLink: (url: string) => Promise<void>;
-  signOut: () => Promise<void>;
-}
+import { AuthStore } from "@/types/auth";
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   session: null,

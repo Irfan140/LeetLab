@@ -1,19 +1,19 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { fetchProblems, fetchSolvedCount } from "@/lib/problems";
-import { colors } from "@/lib/theme";
 import { getAvatar, getDisplayName, getInitials } from "@/lib/user";
+import { colors } from "@/theme/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

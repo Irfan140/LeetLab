@@ -65,7 +65,7 @@ function getRedirectSetupMessage(redirectUri: string) {
     "Open Supabase Dashboard → Authentication → URL Configuration and add:",
     `  ${redirectUri}`,
     "  exp://**",
-    "  mobleetclone://**",
+    "  <myAppscheme>://**",
     "",
     "Then try signing in again.",
   ].join("\n");
