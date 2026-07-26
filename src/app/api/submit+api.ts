@@ -2,9 +2,9 @@ import {
   outcomeStatusLabel,
   parseTestCases,
   runAllTestCases,
-  type CaseResult,
 } from "@/lib/judge";
-import type { LanguageId } from "@/lib/problems";
+import { CaseResult } from "@/types/judge";
+import { LanguageId } from "@/types/problem";
 import { runTaskAsync } from "@/lib/run-task";
 import { getSupabaseAdmin, getUserFromRequest } from "@/lib/supabase-admin";
 import { StatusError } from "expo-server";

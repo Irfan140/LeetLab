@@ -1,6 +1,7 @@
 import { CodeEditor } from "@/components/code-editor";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
-import { submitSolution, type CaseResult } from "@/lib/codebox";
+import { submitSolution } from "@/lib/codebox";
+import { CaseResult } from "@/types/judge";
 import {
   fetchProblemById,
   getAvailableLanguages,
