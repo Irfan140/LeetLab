@@ -7,11 +7,8 @@ import {
   ProblemListItem,
   SubmissionListItem,
   LANGUAGE_ORDER,
-  LANGUAGE_BADGE,
-  LANGUAGE_TINT,
   LanguageExample,
   LANGUAGE_KEYS,
-  LANGUAGE_LABEL,
 } from "@/types/problem";
 
 export function difficultyLabel(difficulty: Difficulty) {
