@@ -1,3 +1,4 @@
+import { getServerEnv } from "@/config/env";
 import { LanguageId } from "@/types/problem";
 import {
   LANGUAGE_ID_MAP,
@@ -21,8 +22,7 @@ export async function executeOnCodeBox(params: {
   stdin: string;
   expectedOutput: string;
 }) {
-  const token = process.env.CODEBOX_TOKEN;
-  if (!token) throw new Error("CODEBOX_TOKEN is not configured on the server.");
+  const token = getServerEnv().CODEBOX_TOKEN;
 
   const upstream = await fetch("https://chaicode.net/api/execute", {
     method: "POST",
@@ -41,7 +41,16 @@ export async function executeOnCodeBox(params: {
   });
 
   const text = await upstream.text();
-  if (!upstream.ok) throw new Error(`CodeBox ${upstream.status}: ${text}`);
+  if (!upstream.ok) {
+    // 5xx responses mean CodeBox's execution engine is down on their side,
+    // not that the user's code or submission is invalid.
+    if (upstream.status >= 500) {
+      throw new Error(
+        "The code execution service is temporarily unavailable. Please try again in a few minutes.",
+      );
+    }
+    throw new Error(`CodeBox ${upstream.status}: ${text}`);
+  }
   return JSON.parse(text) as CodeBoxResponse;
 }
 

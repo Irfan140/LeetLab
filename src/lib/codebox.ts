@@ -1,11 +1,11 @@
 import Constants from "expo-constants";
+import { env } from "@/config/env";
 import { LanguageId } from "@/types/problem";
 import { supabase } from "@/lib/supabase";
 import { SubmitResponse } from "@/types/codebox";
 
 export function resolveApiBaseUrl() {
-  if (process.env.EXPO_PUBLIC_API_BASE_URL)
-    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  if (env.apiBaseUrl) return env.apiBaseUrl;
 
   const hostUri =
     Constants.expoConfig?.hostUri ??
